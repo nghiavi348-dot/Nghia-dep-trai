@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Xác minh</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        height: 100vh;
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #020617, #0f172a);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+    }
+
+    .card {
+        background: rgba(30, 41, 59, 0.95);
+        padding: 35px;
+        border-radius: 15px;
+        width: 380px;
+        text-align: center;
+        box-shadow: 0 0 40px rgba(0,0,0,0.6);
+        animation: fadeIn 0.8s ease;
+    }
+
+    h2 {
+        margin-bottom: 20px;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        margin: 8px 0;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    button:hover {
+        transform: scale(1.03);
+        box-shadow: 0 0 15px #3b82f6;
+    }
+
+    .info {
+        margin-top: 15px;
+        color: #facc15;
+    }
+
+    .code {
+        font-size: 34px;
+        letter-spacing: 10px;
+        margin: 20px 0;
+        color: #22c55e;
+    }
+
+    .out {
+        font-size: 22px;
+        color: #ef4444;
+        animation: shake 0.6s;
+    }
+
+    @keyframes fadeIn {
+        from {opacity: 0; transform: scale(0.9);}
+        to {opacity: 1; transform: scale(1);}
+    }
+
+    @keyframes shake {
+        0% {transform: translateX(0);}
+        25% {transform: translateX(-5px);}
+        50% {transform: translateX(5px);}
+        75% {transform: translateX(-5px);}
+        100% {transform: translateX(0);}
+    }
+
+    .fade-out {
+        animation: fadeOut 2s forwards;
+    }
+
+    @keyframes fadeOut {
+        to {opacity: 0;}
+    }
+</style>
+</head>
+<body>
+
+<div class="card" id="app">
+    <h2>Ngày tháng năm sinh của Vi Thanh Nghĩa ?</h2>
+
+    <button onclick="answer('A')">A. 21/08/2004</button>
+    <button onclick="answer('B')">B. 15/06/2004</button>
+    <button onclick="answer('C')">C. 04/07/2004</button>
+    <button onclick="answer('D')">D. 12/07/2004</button>
+
+    <div class="info" id="info"></div>
+</div>
+
+<script>
+    // ===== CẤU HÌNH =====
+    const correct = "C";                  // Đáp án đúng
+    const secretCode = "040704";           // Mã 6 số
+    const redirectURL = "https://www.facebook.com/VTN.2K4"; // Link chuyển trang
+
+    let attempts = 0;
+
+    // 🔒 Chống reload / F5
+    if (sessionStorage.getItem("visited")) {
+        outWeb("Bạn đã reload trang!");
+    }
+    sessionStorage.setItem("visited", "true");
+
+    document.addEventListener("keydown", e => {
+        if (e.key === "F5" || (e.ctrlKey && e.key === "r") || (e.metaKey && e.key === "r")) {
+            e.preventDefault();
+            outWeb("Không được reload!");
+        }
+    });
+
+    function answer(choice) {
+        attempts++;
+
+        if (choice === correct) {
+            showCode();
+        } else {
+            if (attempts >= 2) {
+                outWeb("Bạn đã bị loại!");
+            } else {
+                document.getElementById("info").innerText =
+                    "Sai! Bạn còn " + (2 - attempts) + " lần.";
+            }
+        }
+    }
+
+    function showCode() {
+        const app = document.getElementById("app");
+        app.innerHTML = `
+            <h2>Mã của bạn</h2>
+            <div class="code">${secretCode}</div>
+            <p>Chuyển trang sau 5 giây...</p>
+        `;
+
+        setTimeout(() => {
+            window.location.href = redirectURL;
+        }, 5000);
+    }
+
+    function outWeb(message) {
+        const app = document.getElementById("app");
+        app.innerHTML = `<div class="out">${message}</div>`;
+        app.classList.add("fade-out");
+
+        setTimeout(() => {
+            document.body.innerHTML = "";
+        }, 2000);
+    }
+</script>
+
+</body>
+</html>
